@@ -1,0 +1,313 @@
+
+#loading{
+  width: 100%;
+  height: 700px;
+  z-index: 100000;
+  position: fixed;
+}
+
+body{
+  background: url('../img/subtle_grunge.png');
+  font-family: "Lato";
+  overflow-x: hidden;
+  width:100vw;
+}
+h3, h1, h5, h4{
+  font-family: "Poiret One"
+}
+
+section{
+  overflow-x: hidden;
+}
+
+button{
+  background: #4D4FFF;
+  border-radius: 5px;
+  border: none;
+}
+
+/*NAV ===================================================================================================================*/
+nav{
+  width: 100%;
+  height: 50px;
+  position: fixed;
+  z-index: 1000;
+  margin-top: -50px;
+  font-size: 1em;
+}
+#list{
+    text-align: center;
+}
+
+li{
+margin: 10px;
+display: inline;
+}
+li:hover{
+  color: #4D4FFF;
+}
+#logo{
+  height: 80px;
+}
+.clicked{
+  color: #4D4FFF;
+}
+
+/*Contact================================================================================================================*/
+#contact{
+  background: rgba(255,255,255, .9);
+  height: 10%;
+  width: 100%;
+  bottom: 0px;
+  position: fixed;
+  z-index: 1000;
+}
+.contact{
+  font-size: 1em;
+  margin: 10px ;
+}
+.contact:hover{
+  color: #4D4FFF;
+}
+#contact-list{
+  text-align: center;
+  margin-top: 10px;
+}
+a{
+  color: black;
+}
+a:hover{
+  color:  #4D4FFF;
+}
+
+/*About Section=========================================================================================================*/
+
+#about{
+  background: rgba(255,255,255,.9);
+  position: fixed;
+  margin-top: -100%;
+  height: 80%;
+  z-index: 500;
+}
+#personal-gif{
+-webkit-filter: grayscale(0%);
+-webkit-transition: all 0.9s ease-in-out;
+-moz-transition: all 0.9s ease-in-out;
+-o-transition: all 0.9s ease-in-out;
+-ms-transition: all 0.9s ease-in-out;
+transition: all 0.9s ease-in-out;
+}
+#personal-gif{
+  margin-top: 30px;
+  margin-bottom: 0px;
+}
+#personal-gif:hover, #matterhorn{
+-webkit-filter: grayscale(100%);
+-webkit-transition: all 0.9s ease-in-out;
+-moz-transition: all 0.9s ease-in-out;
+-o-transition: all 0.9s ease-in-out;
+-ms-transition: all 0.9s ease-in-out;
+transition: all 0.9s ease-in-out;
+}
+#bio{
+  padding: 10px;
+  position: :absolute;
+  text-align: left;
+  float: right;
+  margin-top: 30px
+}
+#about-close{
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  font-size: 40px;
+  color: grey;
+}
+#about-close:hover{
+  color: #4D4FFF;
+}
+
+
+/*Intro Section=========================================================================================================*/
+
+
+/*LOGO WORK*/
+
+#entire-logo{
+  margin-top: 55px;
+  margin-left: 45%
+}
+.logo-piece{
+  width: 15%;
+  position: absolute;
+  z-index: 1;
+}
+.spencerjames{
+  position: absolute;
+  margin-top: 63px;
+  z-index: 1;
+}
+#spencer{
+margin-left: -26%;
+}
+#james{
+margin-left: 14.5%;
+}
+
+/*Clouds*/
+.clouds{
+  position: absolute;
+}
+#clouds{
+  width: 100vw;
+  overflow-x:hidden;
+  position: relative;
+  padding: none;
+  top: -50px;
+}
+
+#static{
+  background: url('../img/static_animated.gif');
+  width: 100%;
+  opacity: .05;
+  height: 700px;
+  position: absolute;
+}
+#matterhorn{
+  width: 100%;
+  margin-top: 400px;
+  bottom: 0px;
+}
+
+#fade-to-skills{
+  opacity: 1;
+  height: 100px;
+  position: absolute;
+  bottom: 400px;
+}
+
+
+/*Skills Section=========================================================================================================*/
+
+#skills{
+-webkit-filter: grayscale(100%);
+-webkit-transition: all 0.9s ease-in-out;
+-moz-transition: all 0.9s ease-in-out;
+-o-transition: all 0.9s ease-in-out;
+-ms-transition: all 0.9s ease-in-out;
+transition: all 0.9s ease-in-out;
+background: url('../img/zwartevilt.png');
+color: white;
+margin-top: -80px;
+height: 1100px;
+}
+#skills:hover{
+-webkit-filter: grayscale(0%);
+z-index: -9999999999999999999999999px;
+-webkit-transition: all 0.9s ease-in-out;
+-moz-transition: all 0.9s ease-in-out;
+-o-transition: all 0.9s ease-in-out;
+-ms-transition: all 0.9s ease-in-out;
+transition: all 0.9s ease-in-out;
+}
+#skills h5{
+  color: white;
+  font-family: "Lato";
+}
+#skills h3{
+  color: white;
+  font-family: "Lato";
+  font-weight: lighter;
+}
+
+ /* Technologies*/
+ #technologies {
+    padding: 5% 4% 0% 4%;
+    opacity: 0.7;
+    width: 100%;
+    min-height: 250px;
+    text-align: center;
+}
+.technologies-box {
+    -moz-box-shadow:    1px 3px 5px 1px #181B40;
+    -webkit-box-shadow: 1px 3px 5px 1px #181B40;
+    box-shadow:         1px 3px 5px 1px #181B40;
+    background: #131B2A;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 5px;
+    height: 100%;
+    min-width: 200px;
+    padding: 10px;
+    position: relative;
+    vertical-align: top;
+    width: 22%;
+}
+
+.technologies-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.technologies-item {
+    padding: 2px 0;
+}
+
+.technologies-header {
+    font-size: 1.4em;
+    margin-bottom: 20px;
+}
+
+#report{
+  margin-top: 50px;
+  margin-left: 8%;
+  margin-right: 8%;
+}
+#ga{
+  float: right;
+  margin-top: 50px;
+  right: 0px;
+}
+
+/*Portfolio Section=========================================================================================================*/
+
+.title{
+  background: white;
+  padding-left: 2%;
+}
+.portfolio-piece{
+  margin-left: 10%;
+  width: 80%;
+  margin-top: 100px;
+  height: 400px;
+}
+.portfolio-piece-logo{
+  height: 50px;
+  width: 50px;
+  float: right;
+}
+.portfolio-piece-slideshow{
+  margin-top: 40px;
+  height: 250px;
+}
+.portfolio-piece-info{
+  margin-top: -25%;
+  float:right;
+  vertical-align: top;
+}
+.modal{
+  height: 700px;
+}
+footer{
+  background: white;
+  height:100px;
+  text-align: center;
+  bottom: 0vw;
+  color: rgba(0,0,0,.6);
+  padding: 1px;
+  margin-top: 50px;
+}
+#footer{
+  margin-left: -3%;
+  margin-top: 10px;
+}
