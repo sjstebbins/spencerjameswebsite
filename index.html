@@ -25,13 +25,14 @@
    <link rel="stylesheet" href="css/foundation.css" />
   <!--  <link rel="stylesheet" href="css/foundation_and_overrides.css"> -->
   <link rel="stylesheet" href="css/application.css">
+  <script src="js/foundation/foundation.orbit.js"></script>
    <script src="js/vendor/modernizr.js"></script>
 
   </head>
   <body>
 
 
-<img src="img/slide_loading.gif" id="loading") %>
+<img src="img/slide_loading.gif" id="loading">
 
 
 <!-- Contact -->
@@ -64,7 +65,7 @@
             <h5>Who </h5><p>Spencer James</p></br>
             <h5>Where </h5><p>New York City, USA</p></br>
             <h5>What </h5><p> Full-Stack Web Development, Graphic Design, Web Design, Creative Engineering</p></br>
-            <h5>Why </h5><p> Because I like to build cool things </p></br>
+            <h5>Why </h5><p> Because I like to build cool products and businesses </p></br>
           </div>
           <i id="about-close" class="fa fa-angle-up"></i>
         </section>
@@ -244,7 +245,7 @@
 
           <div id="relephant-title" class="title large-12"><h3>Relephant<img src="img/relephant-logo.png", class="portfolio-piece-logo"></h3></div>
           <div id="relephant" class="portfolio-piece-slideshow large-6">
-            <a href="#" data-reveal-id="relephant">
+            <a href="#" data-reveal-id="relephantreveal">
               <ul data-orbit data-options=" animation: 'fade';timer_speed: 5000; animation_speed: 1000;resume_on_mouseout: true; slide_number: false">
                 <li><img src="img/relephant1.png">
                   <div class="orbit-caption">Welcome Page</div>
@@ -262,7 +263,7 @@
             </a>
           </div>
 
-         <div id="relephant" class="reveal-modal modal" data-reveal>
+         <div  id="relephantreveal" class="reveal-modal modal" data-reveal>
             <h5 class="lead" style="float:left"><a  href="http://wwww.relephant.me">View the Site</a></h5>
             <h5 class="lead" style="float:right"><a href="https://github.com/sjstebbins/Relephant">See the Code</a></h5>
                   <div class="portfolio-piece-slideshow">
@@ -338,12 +339,14 @@
           <h5 class="lead" style="float:left"><a  href="http://wwww.vogueabode.co">View the Site</a></h5>
             <h3> Designed </h3>
             <p>VogueAbode was designed with the intended user in mind. VogueAbode is a online location where users can explore and purchase high end products from porfessionally decorated rooms. With this is mind, VogueAbode has a clean asthetic that does not ditract from the beauty of the products and designs.</p>
+            <a class="close-reveal-modal">&#215;</a>
           </div>
 
           <div id="vogueabode2" class="large-5 portfolio-piece-info">
             <p>VogueAbode is a home design inspiration generator created and operated by Spencer James on behalf of an interior design firm. VogueAbode allows users to browse the rooms decorated by professional interior designers. Additionally, users have the ability to hover over and purchase products within the image. Purchase orders are then automatically sent to vendors who also have the ability products and order tracking information directly on the site.</p>
             <h5><a  href="http://www.vogueabode.co">View the Site</a></h5>
-            <button data-reveal-id="va-design">Designed</button>
+            <!-- data-reveal-id="va-design" -->
+            <button>Designed</button>
         </div>
       </div>
 

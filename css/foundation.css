@@ -2333,10 +2333,10 @@ div.switch {
         -o-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0); }
       .orbit-container .orbit-slides-container > li .orbit-caption {
-        position: absolute;
-        bottom: 0;
-        background-color: rgba(51, 51, 51, 0.8);
-        color: white;
+        position: fixed;
+        bottom: -25%;
+        background-color: rgba(255,255,255,0.9);
+        color: black;
         width: 100%;
         padding: 0.625rem 0.875rem;
         font-size: 0.875rem; }
@@ -2454,7 +2454,7 @@ div.switch {
       margin-right: 6px;
       border-radius: 1000px; }
       .orbit-container .orbit-bullets li.active {
-        background: #999999; }
+        background: #4D4FFF; }
       .orbit-container .orbit-bullets li:last-child {
         margin-right: 0; }
 
