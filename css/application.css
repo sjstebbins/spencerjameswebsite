@@ -179,13 +179,6 @@ margin-left: 14.5%;
   bottom: 0px;
 }
 
-#fade-to-skills{
-  opacity: 1;
-  height: 100px;
-  position: absolute;
-  bottom: 400px;
-}
-
 
 /*Skills Section=========================================================================================================*/
 
@@ -199,7 +192,7 @@ transition: all 0.9s ease-in-out;
 background: url('../img/zwartevilt.png');
 color: white;
 margin-top: -80px;
-height: 1100px;
+height: 1100px
 }
 #skills:hover{
 -webkit-filter: grayscale(0%);
@@ -260,17 +253,27 @@ transition: all 0.9s ease-in-out;
 
 #report{
   margin-top: 50px;
+  margin-bottom: 80px;
   margin-left: 8%;
   margin-right: 8%;
 }
-#ga{
-  float: right;
-  margin-top: 50px;
-  right: 0px;
+#ga-piece{
+  height: 500px;
+  margin-left: 8%;
+  margin-top: 100px;
 }
-
+#ga{
+  height: 200px
+}
+#ga2{
+  height: 200px
+}
+#ga-image{
+  height: 200px
+}
 /*Portfolio Section=========================================================================================================*/
-
+#portfolio{
+}
 .title{
   background: white;
   padding-left: 2%;

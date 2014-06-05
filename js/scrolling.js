@@ -6,22 +6,27 @@ var pastTechnologies = false;
 var pastTechnologies2 = false;
 var pastPortfolio = false;
 var pastPortfolio2 = false;
+var pastPortfolio3 = false;
 
 
 $(document).ready(function(){
 
 // Setup hidden elements
-  $('#report').hide();
   $('#logo').hide();
+  $('.codeschool').hide();
   $('#technological-know-how').hide();
   $('.technologies-box').hide();
-  $('#ga').css('margin-right', '-100%');
+  $('#ga').css('margin-left', '-100%');
+  $('#ga2').css('margin-right', '-100%');
   $('#relephant-title').hide();
   $('#relephant').css('margin-left', '-100%');
   $('#relephant2').css('margin-right', '-100%');
   $('#vogueabode-title').hide();
   $('#vogueabode').css('margin-left', '-100%');
   $('#vogueabode2').css('margin-right', '-100%');
+  $('#tucan-title').hide();
+  $('#tucan').css('margin-left', '-100%');
+  $('#tucan2').css('margin-right', '-100%');
   // $('.meter').hide();
 
 
@@ -88,7 +93,7 @@ var technologies = $("#technologies").offset().top - 400;
     }
 
 // Codeschool Report
-var report = $("#technologies").offset().top + 300;
+var report = $("#technologies").offset().top + 500;
 
     if (scroll > report ) {
       if (!pastTechnologies2) {
@@ -104,18 +109,18 @@ var report = $("#technologies").offset().top + 300;
 
 
 // GA
-var report = $("#skills").offset().top +100;
+var ga = $("#technologies").offset().top + 300;
 
-    if (scroll > report ) {
+    if (scroll > ga ) {
       if (!pastReport) {
-       $('#ga').animate({'margin-right': '30px'}, 1000);
-       $('#nav-skills').addClass('clicked');
+       $('#ga').animate({'margin-left': '0px'});
+       $('#ga2').animate({'margin-right': '0px'});
        pastReport = true;
      }
     } else {
       if (pastReport) {
-        $('#ga').animate({'margin-right': "-100%"}, 1000);
-        $('#nav-skills').removeClass('clicked');
+        $('#ga').animate({'margin-left': '-100%'});
+        $('#ga2').animate({'margin-right': '-100%'});
         pastReport = false;
       }
     }
@@ -160,6 +165,21 @@ var portfolio2 = $("#portfolio").offset().top + 300;
       }
     }
 
+  if (scroll > portfolio3 ) {
+      if (!pastPortfolio3) {
+       $('#tucan-title').fadeIn();
+       $('#tucan').animate({'margin-left': '0px'});
+       $('#tucan2').animate({'margin-right': '0px'});
+       pastPortfolio3 = true;
+     }
+    } else {
+      if (pastPortfolio3) {
+        $('#tucan-title').fadeOut();
+        $('#tucan').animate({'margin-left': '-100%'});
+        $('#tucan2').animate({'margin-right': '-100%'});
+        pastPortfolio3 = false;
+      }
+    }
 
   });
 });
