@@ -37,6 +37,7 @@ nav{
 }
 #list{
     text-align: center;
+    margin-left: -1%
 }
 
 li{
@@ -273,6 +274,7 @@ transition: all 0.9s ease-in-out;
 }
 /*Portfolio Section=========================================================================================================*/
 #portfolio{
+  padding-top: 50px
 }
 .title{
   background: white;
@@ -281,8 +283,8 @@ transition: all 0.9s ease-in-out;
 .portfolio-piece{
   margin-left: 10%;
   width: 80%;
-  margin-top: 100px;
-  height: 400px;
+  margin-top: 50px;
+  height: 100%;
 }
 .portfolio-piece-logo{
   height: 50px;
@@ -291,12 +293,12 @@ transition: all 0.9s ease-in-out;
 }
 .portfolio-piece-slideshow{
   margin-top: 40px;
-  height: 250px;
+  height: 100%;
 }
 .portfolio-piece-info{
-  margin-top: -25%;
-  float:right;
+  margin-top: 40px;
   vertical-align: top;
+  float: right
 }
 .modal{
   height: 700px;
@@ -314,9 +316,12 @@ footer{
   margin-left: -3%;
   margin-top: 10px;
 }
+.arrow{
+  float: right;
+  color: rgba(0,0,0,.5);
+  position: absolute;
+  margin:20px;
+  right: 0px;
+  z-index: 100
 
-@media screen and (max-width:480px) {
-    nav{
-      height: 100px;
-    }
 }

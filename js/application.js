@@ -36,13 +36,13 @@ $('#loading').fadeOut(2000);
 
     $("#nav-skills").on('click', function(){
         body.animate({
-          scrollTop: 530,
+          scrollTop: 540,
         }, '500');
     });
 
      $("#nav-portfolio").on('click', function(){
         body.animate({
-          scrollTop: 1520,
+          scrollTop: 1640,
         }, '500');
     });
 
@@ -163,11 +163,11 @@ clouds();
 
 
 //Technologies
-$('.meter').hover( function(){
-  $(this).css('background', 'white', 1000);
-},function(){
-    $(this).css("background","#4D4FFF");
-});
+// $('.meter').hover( function(){
+//   $(this).css('background', 'white', 1000);
+// },function(){
+//     $(this).css("background","blue");
+// });
 // Report Card
  $('.report-card.codeschool').reportCard({
     userName: 'sjfstebbins',

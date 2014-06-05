@@ -129,7 +129,7 @@ var ga = $("#technologies").offset().top + 300;
 
 //Portfolio
 var portfolio = $("#portfolio").offset().top -70;
-var portfolio2 = $("#portfolio").offset().top + 300;
+var portfolio2 = $("#portfolio").offset().top + 250;
 
     if (scroll > portfolio ) {
       if (!pastPortfolio) {
@@ -165,21 +165,21 @@ var portfolio2 = $("#portfolio").offset().top + 300;
       }
     }
 
-  if (scroll > portfolio3 ) {
-      if (!pastPortfolio3) {
-       $('#tucan-title').fadeIn();
-       $('#tucan').animate({'margin-left': '0px'});
-       $('#tucan2').animate({'margin-right': '0px'});
-       pastPortfolio3 = true;
-     }
-    } else {
-      if (pastPortfolio3) {
-        $('#tucan-title').fadeOut();
-        $('#tucan').animate({'margin-left': '-100%'});
-        $('#tucan2').animate({'margin-right': '-100%'});
-        pastPortfolio3 = false;
-      }
-    }
+  // if (scroll > portfolio3 ) {
+  //     if (!pastPortfolio3) {
+  //      $('#tucan-title').fadeIn();
+  //      $('#tucan').animate({'margin-left': '0px'});
+  //      $('#tucan2').animate({'margin-right': '0px'});
+  //      pastPortfolio3 = true;
+  //    }
+  //   } else {
+  //     if (pastPortfolio3) {
+  //       $('#tucan-title').fadeOut();
+  //       $('#tucan').animate({'margin-left': '-100%'});
+  //       $('#tucan2').animate({'margin-right': '-100%'});
+  //       pastPortfolio3 = false;
+  //     }
+  //   }
 
   });
 });

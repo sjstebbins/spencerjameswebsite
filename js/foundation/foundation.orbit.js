@@ -1,602 +1,606 @@
-/*
- * jQuery Orbit Plugin 1.3.0
- * www.ZURB.com/playground
- * Copyright 2010, ZURB
- * Free to use under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
-*/
+;(function ($, window, document, undefined) {
+  'use strict';
 
+  var noop = function() {};
 
-(function($) {
+  var Orbit = function(el, settings) {
+    // Don't reinitialize plugin
+    if (el.hasClass(settings.slides_container_class)) {
+      return this;
+    }
 
-  var ORBIT = {
+    var self = this,
+        container,
+        slides_container = el,
+        number_container,
+        bullets_container,
+        timer_container,
+        idx = 0,
+        animate,
+        adjust_height_after = false,
+        has_init_active = slides_container.find("." + settings.active_slide_class).length > 0;
 
-    defaults: {
-      animation: 'horizontal-push',     // fade, horizontal-slide, vertical-slide, horizontal-push, vertical-push
-      animationSpeed: 600,        // how fast animtions are
-      timer: true,            // true or false to have the timer
-      advanceSpeed: 4000,         // if timer is enabled, time between transitions
-      pauseOnHover: false,        // if you hover pauses the slider
-      startClockOnMouseOut: false,    // if clock should start on MouseOut
-      startClockOnMouseOutAfter: 1000,  // how long after MouseOut should the timer start again
-      directionalNav: true,         // manual advancing directional navs
-      captions: true,           // do you want captions?
-      captionAnimation: 'fade',       // fade, slideOpen, none
-      captionAnimationSpeed: 600,     // if so how quickly should they animate in
-      bullets: false,           // true or false to activate the bullet navigation
-      bulletThumbs: false,        // thumbnails for the bullets
-      bulletThumbLocation: '',      // location from this file where thumbs will be
-      afterSlideChange: $.noop,   // empty function
-      fluid: false,             // true or ratio (ex: 4x3) to force an aspect ratio for content slides, only works from within a fluid layout
-      centerBullets: true    // center bullet nav with js, turn this off if you want to position the bullet nav manually
-    },
+    self.cache = {};
 
-    activeSlide: 0,
-    numberSlides: 0,
-    orbitWidth: null,
-    orbitHeight: null,
-    locked: null,
-    timerRunning: null,
-    degrees: 0,
-    wrapperHTML: '<div class="orbit-wrapper" />',
-    timerHTML: '<div class="timer"><span class="mask"><span class="rotator"></span></span><span class="pause"></span></div>',
-    captionHTML: '<div class="orbit-caption"></div>',
-    directionalNavHTML: '<div class="slider-nav"><span class="right">Right</span><span class="left">Left</span></div>',
-    bulletHTML: '<ul class="orbit-bullets"></ul>',
+    self.slides = function() {
+      return slides_container.children(settings.slide_selector);
+    };
 
-    init: function (element, options) {
-      var $imageSlides,
-          imagesLoadedCount = 0,
-          self = this;
+    if (!has_init_active) {self.slides().first().addClass(settings.active_slide_class)};
 
-      // Bind functions to correct context
-      this.clickTimer = $.proxy(this.clickTimer, this);
-      this.addBullet = $.proxy(this.addBullet, this);
-      this.resetAndUnlock = $.proxy(this.resetAndUnlock, this);
-      this.stopClock = $.proxy(this.stopClock, this);
-      this.startTimerAfterMouseLeave = $.proxy(this.startTimerAfterMouseLeave, this);
-      this.clearClockMouseLeaveTimer = $.proxy(this.clearClockMouseLeaveTimer, this);
-      this.rotateTimer = $.proxy(this.rotateTimer, this);
+    self.update_slide_number = function(index) {
+      if (settings.slide_number) {
+        number_container.find('span:first').text(parseInt(index)+1);
+        number_container.find('span:last').text(self.slides().length);
+      }
+      if (settings.bullets) {
+        bullets_container.children().removeClass(settings.bullets_active_class);
+        $(bullets_container.children().get(index)).addClass(settings.bullets_active_class);
+      }
+    };
 
-      this.options = $.extend({}, this.defaults, options);
-      if (this.options.timer === 'false') this.options.timer = false;
-      if (this.options.captions === 'false') this.options.captions = false;
-      if (this.options.directionalNav === 'false') this.options.directionalNav = false;
+    self.update_active_link = function(index) {
+      var link = $('[data-orbit-link="'+self.slides().eq(index).attr('data-orbit-slide')+'"]');
+      link.siblings().removeClass(settings.bullets_active_class);
+      link.addClass(settings.bullets_active_class);
+    };
 
-      this.$element = $(element);
-      this.$wrapper = this.$element.wrap(this.wrapperHTML).parent();
-      this.$slides = this.$element.children('img, a, div');
+    self.build_markup = function() {
+      slides_container.wrap('<div class="'+settings.container_class+'"></div>');
+      container = slides_container.parent();
+      slides_container.addClass(settings.slides_container_class);
+      slides_container.addClass(settings.animation);
 
-      if (this.options.fluid) {
-        this.$wrapper.addClass('fluid');
+      if (settings.stack_on_small) {
+        container.addClass(settings.stack_on_small_class);
       }
 
-      this.$element.bind('orbit.next', function () {
-        self.shift('next');
-      });
+      if (settings.navigation_arrows) {
+        container.append($('<a href="#"><span></span></a>').addClass(settings.prev_class));
+        container.append($('<a href="#"><span></span></a>').addClass(settings.next_class));
+      }
 
-      this.$element.bind('orbit.prev', function () {
-        self.shift('prev');
-      });
+      if (settings.timer) {
+        timer_container = $('<div>').addClass(settings.timer_container_class);
+        timer_container.append('<span>');
+        if (settings.timer_show_progress_bar) {
+            timer_container.append($('<div>').addClass(settings.timer_progress_class));
+        }
+        timer_container.addClass(settings.timer_paused_class);
+        container.append(timer_container);
+      }
 
-      this.$element.bind('orbit.goto', function (event, index) {
-        self.shift(index);
-      });
+      if (settings.slide_number) {
+        number_container = $('<div>').addClass(settings.slide_number_class);
+        number_container.append('<span></span> ' + settings.slide_number_text + ' <span></span>');
+        container.append(number_container);
+      }
 
-      this.$element.bind('orbit.start', function (event, index) {
-        self.startClock();
-      });
-
-      this.$element.bind('orbit.stop', function (event, index) {
-        self.stopClock();
-      });
-
-      $imageSlides = this.$slides.filter('img');
-
-      if ($imageSlides.length === 0) {
-        this.loaded();
-      } else {
-        $imageSlides.bind('imageready', function () {
-          imagesLoadedCount += 1;
-          if (imagesLoadedCount === $imageSlides.length) {
-            self.loaded();
-          }
+      if (settings.bullets) {
+        bullets_container = $('<ol>').addClass(settings.bullets_container_class);
+        container.append(bullets_container);
+        bullets_container.wrap('<div class="orbit-bullets-container"></div>');
+        self.slides().each(function(idx, el) {
+          var bullet = $('<li>').attr('data-orbit-slide', idx);
+          bullets_container.append(bullet);
         });
       }
-    },
 
-    loaded: function () {
-      this.$element
-        .addClass('orbit')
-        .css({width: '1px', height: '1px'});
+    };
 
-      this.setDimentionsFromLargestSlide();
-      this.updateOptionsIfOnlyOneSlide();
-      this.setupFirstSlide();
+    self._prepare_direction = function(next_idx, current_direction) {
+      var dir = 'next';
+      if (next_idx <= idx) { dir = 'prev'; }
 
-      if (this.options.timer) {
-        this.setupTimer();
-        this.startClock();
+      if (settings.animation === 'slide') {
+        setTimeout(function(){
+          slides_container.removeClass("swipe-prev swipe-next");
+          if (dir === 'next') {slides_container.addClass("swipe-next");}
+          else if (dir === 'prev') {slides_container.addClass("swipe-prev");}
+        },0);
       }
 
-      if (this.options.captions) {
-        this.setupCaptions();
+      var slides = self.slides();
+      if (next_idx >= slides.length) {
+        if (!settings.circular) return false;
+        next_idx = 0;
+      } else if (next_idx < 0) {
+        if (!settings.circular) return false;
+        next_idx = slides.length - 1;
       }
+      var current = $(slides.get(idx))
+        , next = $(slides.get(next_idx));
 
-      if (this.options.directionalNav) {
-        this.setupDirectionalNav();
-      }
+      return [dir, current, next, next_idx];
+    };
 
-      if (this.options.bullets) {
-        this.setupBulletNav();
-        this.setActiveBullet();
-      }
-    },
+    self._goto = function(next_idx, start_timer) {
+      if (next_idx === null) {return false;}
+      if (self.cache.animating) {return false;}
+      if (next_idx === idx) {return false;}
+      if (typeof self.cache.timer === 'object') {self.cache.timer.restart();}
 
-    currentSlide: function () {
-      return this.$slides.eq(this.activeSlide);
-    },
+      var slides = self.slides();
+      self.cache.animating = true;
+      var res = self._prepare_direction(next_idx)
+        , dir = res[0]
+        , current = res[1]
+        , next = res[2]
+        , next_idx = res[3];
 
-    setDimentionsFromLargestSlide: function () {
-      //Collect all slides and set slider size of largest image
-      var self = this,
-          $fluidPlaceholder;
+      // This means that circular is disabled and we most likely reached the last slide.
+      if (res === false) return false;
 
-      self.$element.add(self.$wrapper).width(this.$slides.first().width());
-      self.$element.add(self.$wrapper).height(this.$slides.first().height());
-      self.orbitWidth = this.$slides.first().width();
-      self.orbitHeight = this.$slides.first().height();
-      $fluidPlaceholder = this.$slides.first().clone();
+      slides_container.trigger('before-slide-change.fndtn.orbit');
+      settings.before_slide_change();
+      idx = next_idx;
 
-      this.$slides.each(function () {
-        var slide = $(this),
-            slideWidth = slide.width(),
-            slideHeight = slide.height();
+      current.css("transitionDuration", settings.animation_speed+"ms");
+      next.css("transitionDuration", settings.animation_speed+"ms");
 
-        if (slideWidth > self.$element.width()) {
-          self.$element.add(self.$wrapper).width(slideWidth);
-          self.orbitWidth = self.$element.width();
-        }
-        if (slideHeight > self.$element.height()) {
-          self.$element.add(self.$wrapper).height(slideHeight);
-          self.orbitHeight = self.$element.height();
-          $fluidPlaceholder = $(this).clone();
-        }
-        self.numberSlides += 1;
-      });
+      var callback = function() {
+        var unlock = function() {
+          if (start_timer === true) {self.cache.timer.restart();}
+          self.update_slide_number(idx);
+          next.addClass(settings.active_slide_class);
+          self.update_active_link(next_idx);
+          slides_container.trigger('after-slide-change.fndtn.orbit',[{slide_number: idx, total_slides: slides.length}]);
+          settings.after_slide_change(idx, slides.length);
+          setTimeout(function(){
+            self.cache.animating = false;
+          }, 100);
 
-      if (this.options.fluid) {
-
-        if (typeof this.options.fluid === "string") {
-          $fluidPlaceholder = $('<img src="http://placehold.it/' + this.options.fluid + '" />')
-        }
-
-        self.$element.prepend($fluidPlaceholder);
-        $fluidPlaceholder.addClass('fluid-placeholder');
-        self.$element.add(self.$wrapper).css({width: 'inherit'});
-        self.$element.add(self.$wrapper).css({height: 'inherit'});
-
-        $(window).bind('resize', function () {
-          self.orbitWidth = self.$element.width();
-          self.orbitHeight = self.$element.height();
-        });
-      }
-    },
-
-    //Animation locking functions
-    lock: function () {
-      this.locked = true;
-    },
-
-    unlock: function () {
-      this.locked = false;
-    },
-
-    updateOptionsIfOnlyOneSlide: function () {
-      if(this.$slides.length === 1) {
-        this.options.directionalNav = false;
-        this.options.timer = false;
-        this.options.bullets = false;
-      }
-    },
-
-    setupFirstSlide: function () {
-      //Set initial front photo z-index and fades it in
-      var self = this;
-      this.$slides.first()
-        .css({"z-index" : 3})
-        .fadeIn(function() {
-          //brings in all other slides IF css declares a display: none
-          self.$slides.css({"display":"block"})
-      });
-    },
-
-    startClock: function () {
-      var self = this;
-
-      if(!this.options.timer) {
-        return false;
-      }
-
-      if (this.$timer.is(':hidden')) {
-        this.clock = setInterval(function () {
-          self.$element.trigger('orbit.next');
-        }, this.options.advanceSpeed);
-      } else {
-        this.timerRunning = true;
-        this.$pause.removeClass('active')
-        this.clock = setInterval(this.rotateTimer, this.options.advanceSpeed / 180);
-      }
-    },
-
-    rotateTimer: function () {
-      var degreeCSS = "rotate(" + this.degrees + "deg)"
-      this.degrees += 2;
-      this.$rotator.css({
-        "-webkit-transform": degreeCSS,
-        "-moz-transform": degreeCSS,
-        "-o-transform": degreeCSS
-      });
-      if(this.degrees > 180) {
-        this.$rotator.addClass('move');
-        this.$mask.addClass('move');
-      }
-      if(this.degrees > 360) {
-        this.$rotator.removeClass('move');
-        this.$mask.removeClass('move');
-        this.degrees = 0;
-        this.$element.trigger('orbit.next');
-      }
-    },
-
-    stopClock: function () {
-      if (!this.options.timer) {
-        return false;
-      } else {
-        this.timerRunning = false;
-        clearInterval(this.clock);
-        this.$pause.addClass('active');
-      }
-    },
-
-    setupTimer: function () {
-      this.$timer = $(this.timerHTML);
-      this.$wrapper.append(this.$timer);
-
-      this.$rotator = this.$timer.find('.rotator');
-      this.$mask = this.$timer.find('.mask');
-      this.$pause = this.$timer.find('.pause');
-
-      this.$timer.click(this.clickTimer);
-
-      if (this.options.startClockOnMouseOut) {
-        this.$wrapper.mouseleave(this.startTimerAfterMouseLeave);
-        this.$wrapper.mouseenter(this.clearClockMouseLeaveTimer);
-      }
-
-      if (this.options.pauseOnHover) {
-        this.$wrapper.mouseenter(this.stopClock);
-      }
-    },
-
-    startTimerAfterMouseLeave: function () {
-      var self = this;
-
-      this.outTimer = setTimeout(function() {
-        if(!self.timerRunning){
-          self.startClock();
-        }
-      }, this.options.startClockOnMouseOutAfter)
-    },
-
-    clearClockMouseLeaveTimer: function () {
-      clearTimeout(this.outTimer);
-    },
-
-    clickTimer: function () {
-      if(!this.timerRunning) {
-          this.startClock();
-      } else {
-          this.stopClock();
-      }
-    },
-
-    setupCaptions: function () {
-      this.$caption = $(this.captionHTML);
-      this.$wrapper.append(this.$caption);
-      this.setCaption();
-    },
-
-    setCaption: function () {
-      var captionLocation = this.currentSlide().attr('data-caption'),
-          captionHTML;
-
-      if (!this.options.captions) {
-        return false;
-      }
-
-      //Set HTML for the caption if it exists
-      if (captionLocation) {
-        captionHTML = $(captionLocation).html(); //get HTML from the matching HTML entity
-        this.$caption
-          .attr('id', captionLocation) // Add ID caption TODO why is the id being set?
-          .html(captionHTML); // Change HTML in Caption
-          //Animations for Caption entrances
-        switch (this.options.captionAnimation) {
-          case 'none':
-            this.$caption.show();
-            break;
-          case 'fade':
-            this.$caption.fadeIn(this.options.captionAnimationSpeed);
-            break;
-          case 'slideOpen':
-            this.$caption.slideDown(this.options.captionAnimationSpeed);
-            break;
-        }
-      } else {
-        //Animations for Caption exits
-        switch (this.options.captionAnimation) {
-          case 'none':
-            this.$caption.hide();
-            break;
-          case 'fade':
-            this.$caption.fadeOut(this.options.captionAnimationSpeed);
-            break;
-          case 'slideOpen':
-            this.$caption.slideUp(this.options.captionAnimationSpeed);
-            break;
-        }
-      }
-    },
-
-    setupDirectionalNav: function () {
-      var self = this;
-
-      this.$wrapper.append(this.directionalNavHTML);
-
-      this.$wrapper.find('.left').click(function () {
-        self.stopClock();
-        self.$element.trigger('orbit.prev');
-      });
-
-      this.$wrapper.find('.right').click(function () {
-        self.stopClock();
-        self.$element.trigger('orbit.next');
-      });
-    },
-
-    setupBulletNav: function () {
-      this.$bullets = $(this.bulletHTML);
-      this.$wrapper.append(this.$bullets);
-      this.$slides.each(this.addBullet);
-      this.$element.addClass('with-bullets');
-      if (this.options.centerBullets) this.$bullets.css('margin-left', -this.$bullets.width() / 2);
-    },
-
-    addBullet: function (index, slide) {
-      var position = index + 1,
-          $li = $('<li>' + (position) + '</li>'),
-          thumbName,
-          self = this;
-
-      if (this.options.bulletThumbs) {
-        thumbName = $(slide).attr('data-thumb');
-        if (thumbName) {
-          $li
-            .addClass('has-thumb')
-            .css({background: "url(" + this.options.bulletThumbLocation + thumbName + ") no-repeat"});;
-        }
-      }
-      this.$bullets.append($li);
-      $li.data('index', index);
-      $li.click(function () {
-        self.stopClock();
-        self.$element.trigger('orbit.goto', [$li.data('index')])
-      });
-    },
-
-    setActiveBullet: function () {
-      if(!this.options.bullets) { return false; } else {
-        this.$bullets.find('li')
-          .removeClass('active')
-          .eq(this.activeSlide)
-          .addClass('active');
-      }
-    },
-
-    resetAndUnlock: function () {
-      this.$slides
-        .eq(this.prevActiveSlide)
-        .css({"z-index" : 1});
-      this.unlock();
-      this.options.afterSlideChange.call(this, this.$slides.eq(this.prevActiveSlide), this.$slides.eq(this.activeSlide));
-    },
-
-    shift: function (direction) {
-      var slideDirection = direction;
-
-      //remember previous activeSlide
-      this.prevActiveSlide = this.activeSlide;
-
-      //exit function if bullet clicked is same as the current image
-      if (this.prevActiveSlide == slideDirection) { return false; }
-
-      if (this.$slides.length == "1") { return false; }
-      if (!this.locked) {
-        this.lock();
-        //deduce the proper activeImage
-        if (direction == "next") {
-          this.activeSlide++;
-          if (this.activeSlide == this.numberSlides) {
-              this.activeSlide = 0;
-          }
-        } else if (direction == "prev") {
-          this.activeSlide--
-          if (this.activeSlide < 0) {
-            this.activeSlide = this.numberSlides - 1;
-          }
+        };
+        if (slides_container.height() != next.height() && settings.variable_height) {
+          slides_container.animate({'height': next.height()}, 250, 'linear', unlock);
         } else {
-          this.activeSlide = direction;
-          if (this.prevActiveSlide < this.activeSlide) {
-            slideDirection = "next";
-          } else if (this.prevActiveSlide > this.activeSlide) {
-            slideDirection = "prev"
+          unlock();
+        }
+      };
+
+      if (slides.length === 1) {callback(); return false;}
+
+      var start_animation = function() {
+        if (dir === 'next') {animate.next(current, next, callback);}
+        if (dir === 'prev') {animate.prev(current, next, callback);}
+      };
+
+      if (next.height() > slides_container.height() && settings.variable_height) {
+        slides_container.animate({'height': next.height()}, 250, 'linear', start_animation);
+      } else {
+        start_animation();
+      }
+    };
+
+    self.next = function(e) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      self._prepare_direction(idx + 1);
+      setTimeout(function(){
+        self._goto(idx + 1);
+    }, 100);
+    };
+
+    self.prev = function(e) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      self._prepare_direction(idx - 1);
+      setTimeout(function(){
+        self._goto(idx - 1)
+      }, 100);
+    };
+
+    self.link_custom = function(e) {
+      e.preventDefault();
+      var link = $(this).attr('data-orbit-link');
+      if ((typeof link === 'string') && (link = $.trim(link)) != "") {
+        var slide = container.find('[data-orbit-slide='+link+']');
+        if (slide.index() != -1) {
+          setTimeout(function(){
+            self._goto(slide.index());
+          },100);
+        }
+      }
+    };
+
+    self.link_bullet = function(e) {
+      var index = $(this).attr('data-orbit-slide');
+      if ((typeof index === 'string') && (index = $.trim(index)) != "") {
+        if(isNaN(parseInt(index)))
+        {
+          var slide = container.find('[data-orbit-slide='+index+']');
+          if (slide.index() != -1) {
+            setTimeout(function(){
+              self._goto(slide.index() + 1);
+            },100);
           }
         }
-
-        //set to correct bullet
-        this.setActiveBullet();
-
-        //set previous slide z-index to one below what new activeSlide will be
-        this.$slides
-          .eq(this.prevActiveSlide)
-          .css({"z-index" : 2});
-
-        //fade
-        if (this.options.animation == "fade") {
-          this.$slides
-            .eq(this.activeSlide)
-            .css({"opacity" : 0, "z-index" : 3})
-            .animate({"opacity" : 1}, this.options.animationSpeed, this.resetAndUnlock);
+        else
+        {
+          setTimeout(function(){
+            self._goto(parseInt(index));
+          },100);
         }
+      }
 
-        //horizontal-slide
-        if (this.options.animation == "horizontal-slide") {
-          if (slideDirection == "next") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"left": this.orbitWidth, "z-index" : 3})
-              .animate({"left" : 0}, this.options.animationSpeed, this.resetAndUnlock);
+    }
+
+    self.timer_callback = function() {
+      self._goto(idx + 1, true);
+    }
+
+    self.compute_dimensions = function() {
+      var current = $(self.slides().get(idx));
+      var h = current.height();
+      if (!settings.variable_height) {
+        self.slides().each(function(){
+          if ($(this).height() > h) { h = $(this).height(); }
+        });
+      }
+      slides_container.height(h);
+    };
+
+    self.create_timer = function() {
+      var t = new Timer(
+        container.find('.'+settings.timer_container_class),
+        settings,
+        self.timer_callback
+      );
+      return t;
+    };
+
+    self.stop_timer = function() {
+      if (typeof self.cache.timer === 'object') self.cache.timer.stop();
+    };
+
+    self.toggle_timer = function() {
+      var t = container.find('.'+settings.timer_container_class);
+      if (t.hasClass(settings.timer_paused_class)) {
+        if (typeof self.cache.timer === 'undefined') {self.cache.timer = self.create_timer();}
+        self.cache.timer.start();
+      }
+      else {
+        if (typeof self.cache.timer === 'object') {self.cache.timer.stop();}
+      }
+    };
+
+    self.init = function() {
+      self.build_markup();
+      if (settings.timer) {
+        self.cache.timer = self.create_timer();
+        Foundation.utils.image_loaded(this.slides().children('img'), self.cache.timer.start);
+      }
+
+      animate = new CSSAnimation(settings, slides_container);
+
+      if (has_init_active) {
+        var $init_target = slides_container.find("." + settings.active_slide_class),
+            animation_speed = settings.animation_speed;
+        settings.animation_speed = 1;
+        $init_target.removeClass('active');
+        self._goto($init_target.index());
+        settings.animation_speed = animation_speed;
+      }
+
+      container.on('click', '.'+settings.next_class, self.next);
+      container.on('click', '.'+settings.prev_class, self.prev);
+
+      if (settings.next_on_click) {
+        container.on('click', '[data-orbit-slide]', self.link_bullet);
+      }
+
+      container.on('click', self.toggle_timer);
+      if (settings.swipe) {
+        slides_container.on('touchstart.fndtn.orbit',function(e) {
+          if (self.cache.animating) {return;}
+          if (!e.touches) {e = e.originalEvent;}
+          e.preventDefault();
+          e.stopPropagation();
+
+          self.cache.start_page_x = e.touches[0].pageX;
+          self.cache.start_page_y = e.touches[0].pageY;
+          self.cache.start_time = (new Date()).getTime();
+          self.cache.delta_x = 0;
+          self.cache.is_scrolling = null;
+          self.cache.direction = null;
+
+          self.stop_timer(); // does not appear to prevent callback from occurring
+        })
+        .on('touchmove.fndtn.orbit',function(e) {
+          if (Math.abs(self.cache.delta_x) > 5) {
+            e.preventDefault();
+            e.stopPropagation();
           }
-          if (slideDirection == "prev") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"left": -this.orbitWidth, "z-index" : 3})
-              .animate({"left" : 0}, this.options.animationSpeed, this.resetAndUnlock);
-          }
+
+          if (self.cache.animating) {return;}
+          requestAnimationFrame(function(){
+            if (!e.touches) { e = e.originalEvent; }
+
+            // Ignore pinch/zoom events
+            if(e.touches.length > 1 || e.scale && e.scale !== 1) return;
+
+            self.cache.delta_x = e.touches[0].pageX - self.cache.start_page_x;
+
+            if (self.cache.is_scrolling === null) {
+              self.cache.is_scrolling = !!( self.cache.is_scrolling || Math.abs(self.cache.delta_x) < Math.abs(e.touches[0].pageY - self.cache.start_page_y) );
+            }
+
+            if (self.cache.is_scrolling) {
+              return;
+            }
+
+            var direction = (self.cache.delta_x < 0) ? (idx+1) : (idx-1);
+            if (self.cache.direction !== direction) {
+              var res = self._prepare_direction(direction);
+              self.cache.direction = direction;
+              self.cache.dir = res[0];
+              self.cache.current = res[1];
+              self.cache.next = res[2];
+            }
+
+            if (settings.animation === 'slide') {
+              var offset, next_offset;
+
+              offset = (self.cache.delta_x / container.width()) * 100;
+              if (offset >= 0) {next_offset = -(100 - offset);}
+              else {next_offset = 100 + offset;}
+
+              self.cache.current.css("transform","translate3d("+offset+"%,0,0)");
+              self.cache.next.css("transform","translate3d("+next_offset+"%,0,0)");
+            }
+          });
+        })
+        .on('touchend.fndtn.orbit', function(e) {
+          if (self.cache.animating) {return;}
+          e.preventDefault();
+          e.stopPropagation();
+          setTimeout(function(){
+            self._goto(self.cache.direction);
+          }, 50);
+        });
+      }
+      container.on('mouseenter.fndtn.orbit', function(e) {
+        if (settings.timer && settings.pause_on_hover) {
+          self.stop_timer();
         }
-
-        //vertical-slide
-        if (this.options.animation == "vertical-slide") {
-          if (slideDirection == "prev") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"top": this.orbitHeight, "z-index" : 3})
-              .animate({"top" : 0}, this.options.animationSpeed, this.resetAndUnlock);
-          }
-          if (slideDirection == "next") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"top": -this.orbitHeight, "z-index" : 3})
-              .animate({"top" : 0}, this.options.animationSpeed, this.resetAndUnlock);
-          }
+      })
+      .on('mouseleave.fndtn.orbit', function(e) {
+        if (settings.timer && settings.resume_on_mouseout) {
+          self.cache.timer.start();
         }
+      });
 
-        //horizontal-push
-        if (this.options.animation == "horizontal-push") {
-          if (slideDirection == "next") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"left": this.orbitWidth, "z-index" : 3})
-              .animate({"left" : 0}, this.options.animationSpeed, this.resetAndUnlock);
-            this.$slides
-              .eq(this.prevActiveSlide)
-              .animate({"left" : -this.orbitWidth}, this.options.animationSpeed);
-          }
-          if (slideDirection == "prev") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({"left": -this.orbitWidth, "z-index" : 3})
-              .animate({"left" : 0}, this.options.animationSpeed, this.resetAndUnlock);
-            this.$slides
-              .eq(this.prevActiveSlide)
-              .animate({"left" : this.orbitWidth}, this.options.animationSpeed);
-          }
-        }
+      $(document).on('click', '[data-orbit-link]', self.link_custom);
+      $(window).on('load resize', self.compute_dimensions);
+      var children = this.slides().find('img');
+      Foundation.utils.image_loaded(children, self.compute_dimensions);
+      Foundation.utils.image_loaded(children, function() {
+        container.prev('.'+settings.preloader_class).css('display', 'none');
+        self.update_slide_number(idx);
+        self.update_active_link(idx);
+        slides_container.trigger('ready.fndtn.orbit');
+      });
+    };
 
-        //vertical-push
-        if (this.options.animation == "vertical-push") {
-          if (slideDirection == "next") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({top: -this.orbitHeight, "z-index" : 3})
-              .animate({top : 0}, this.options.animationSpeed, this.resetAndUnlock);
-            this.$slides
-              .eq(this.prevActiveSlide)
-              .animate({top : this.orbitHeight}, this.options.animationSpeed);
-          }
-          if (slideDirection == "prev") {
-            this.$slides
-              .eq(this.activeSlide)
-              .css({top: this.orbitHeight, "z-index" : 3})
-              .animate({top : 0}, this.options.animationSpeed, this.resetAndUnlock);
-            this.$slides
-              .eq(this.prevActiveSlide)
-              .animate({top : -this.orbitHeight}, this.options.animationSpeed);
-          }
-        }
+    self.init();
+  };
 
-        this.setCaption();
+  var Timer = function(el, settings, callback) {
+    var self = this,
+        duration = settings.timer_speed,
+        progress = el.find('.'+settings.timer_progress_class),
+        do_progress = progress && progress.css('display') != 'none',
+        start,
+        timeout,
+        left = -1;
+
+    this.update_progress = function(w) {
+      var new_progress = progress.clone();
+      new_progress.attr('style', '');
+      new_progress.css('width', w+'%');
+      progress.replaceWith(new_progress);
+      progress = new_progress;
+    };
+
+    this.restart = function() {
+      clearTimeout(timeout);
+      el.addClass(settings.timer_paused_class);
+      left = -1;
+      if (do_progress) {self.update_progress(0);}
+      self.start();
+    };
+
+    this.start = function() {
+      if (!el.hasClass(settings.timer_paused_class)) {return true;}
+      left = (left === -1) ? duration : left;
+      el.removeClass(settings.timer_paused_class);
+      if (do_progress) {
+          start = new Date().getTime();
+          progress.animate({'width': '100%'}, left, 'linear');
+      }
+      timeout = setTimeout(function() {
+        self.restart();
+        callback();
+      }, left);
+      el.trigger('timer-started.fndtn.orbit')
+    };
+
+    this.stop = function() {
+      if (el.hasClass(settings.timer_paused_class)) {return true;}
+      clearTimeout(timeout);
+      el.addClass(settings.timer_paused_class);
+      if (do_progress) {
+          var end = new Date().getTime();
+          left = left - (end - start);
+          var w = 100 - ((left / duration) * 100);
+          self.update_progress(w);
+      }
+      el.trigger('timer-stopped.fndtn.orbit');
+    };
+  };
+
+  var CSSAnimation = function(settings, container) {
+    var animation_end = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend";
+
+    this.next = function(current, next, callback) {
+      if (Modernizr.csstransitions) {
+        next.on(animation_end, function(e){
+          next.unbind(animation_end);
+          current.removeClass("active animate-out");
+          next.removeClass("animate-in");
+          container.children().css({
+            "transform":"",
+            "-ms-transform":"",
+            "-webkit-transition-duration":"",
+            "-moz-transition-duration": "",
+            "-o-transition-duration": "",
+            "transition-duration":""
+          });
+          callback();
+        });
+      } else {
+        setTimeout(function(){
+          current.removeClass("active animate-out");
+          next.removeClass("animate-in");
+          container.children().css({
+            "transform":"",
+            "-ms-transform":"",
+            "-webkit-transition-duration":"",
+            "-moz-transition-duration": "",
+            "-o-transition-duration": "",
+            "transition-duration":""
+          });
+          callback();
+        }, settings.animation_speed);
+      }
+      container.children().css({
+        "transform":"",
+        "-ms-transform":"",
+        "-webkit-transition-duration":"",
+        "-moz-transition-duration": "",
+        "-o-transition-duration": "",
+        "transition-duration":""
+      });
+      current.addClass("animate-out");
+      next.addClass("animate-in");
+    };
+
+    this.prev = function(current, prev, callback) {
+      if (Modernizr.csstransitions) {
+        prev.on(animation_end, function(e){
+          prev.unbind(animation_end);
+          current.removeClass("active animate-out");
+          prev.removeClass("animate-in");
+          container.children().css({
+            "transform":"",
+            "-ms-transform":"",
+            "-webkit-transition-duration":"",
+            "-moz-transition-duration": "",
+            "-o-transition-duration": "",
+            "transition-duration":""
+          });
+          callback();
+        });
+      } else {
+        setTimeout(function(){
+          current.removeClass("active animate-out");
+          prev.removeClass("animate-in");
+          container.children().css({
+            "transform":"",
+            "-ms-transform":"",
+            "-webkit-transition-duration":"",
+            "-moz-transition-duration": "",
+            "-o-transition-duration": "",
+            "transition-duration":""
+          });
+          callback();
+        }, settings.animation_speed);
+      }
+      container.children().css({
+        "transform":"",
+        "-ms-transform":"",
+        "-webkit-transition-duration":"",
+        "-moz-transition-duration": "",
+        "-o-transition-duration": "",
+        "transition-duration":""
+      });
+      current.addClass("animate-out");
+      prev.addClass("animate-in");
+    };
+  };
+
+
+  Foundation.libs = Foundation.libs || {};
+
+  Foundation.libs.orbit = {
+    name: 'orbit',
+
+    version: '5.2.2',
+
+    settings: {
+      animation: 'slide',
+      timer_speed: 10000,
+      pause_on_hover: true,
+      resume_on_mouseout: false,
+      next_on_click: true,
+      animation_speed: 500,
+      stack_on_small: false,
+      navigation_arrows: true,
+      slide_number: true,
+      slide_number_text: 'of',
+      container_class: 'orbit-container',
+      stack_on_small_class: 'orbit-stack-on-small',
+      next_class: 'orbit-next',
+      prev_class: 'orbit-prev',
+      timer_container_class: 'orbit-timer',
+      timer_paused_class: 'paused',
+      timer_progress_class: 'orbit-progress',
+      timer_show_progress_bar: true,
+      slides_container_class: 'orbit-slides-container',
+      preloader_class: 'preloader',
+      slide_selector: '*',
+      bullets_container_class: 'orbit-bullets',
+      bullets_active_class: 'active',
+      slide_number_class: 'orbit-slide-number',
+      caption_class: 'orbit-caption',
+      active_slide_class: 'active',
+      orbit_transition_class: 'orbit-transitioning',
+      bullets: true,
+      circular: true,
+      timer: true,
+      variable_height: false,
+      swipe: true,
+      before_slide_change: noop,
+      after_slide_change: noop
+    },
+
+    init : function (scope, method, options) {
+      var self = this;
+      this.bindings(method, options);
+    },
+
+    events : function (instance) {
+      var orbit_instance = new Orbit(this.S(instance), this.S(instance).data('orbit-init'));
+      this.S(instance).data(self.name + '-instance', orbit_instance);
+    },
+
+    reflow : function () {
+      var self = this;
+
+      if (self.S(self.scope).is('[data-orbit]')) {
+        var $el = self.S(self.scope);
+        var instance = $el.data(self.name + '-instance');
+        instance.compute_dimensions();
+      } else {
+        self.S('[data-orbit]', self.scope).each(function(idx, el) {
+          var $el = self.S(el);
+          var opts = self.data_options($el);
+          var instance = $el.data(self.name + '-instance');
+          instance.compute_dimensions();
+        });
       }
     }
   };
 
-  $.fn.orbit = function (options) {
-    return this.each(function () {
-      var orbit = $.extend({}, ORBIT);
-      orbit.init(this, options);
-    });
-  };
 
-})(jQuery);
-
-/*!
- * jQuery imageready Plugin
- * http://www.zurb.com/playground/
- *
- * Copyright 2011, ZURB
- * Released under the MIT License
- */
-(function ($) {
-
-  var options = {};
-
-  $.event.special.imageready = {
-
-    setup: function (data, namespaces, eventHandle) {
-      options = data || options;
-    },
-
-    add: function (handleObj) {
-      var $this = $(this),
-          src;
-
-      if ( this.nodeType === 1 && this.tagName.toLowerCase() === 'img' && this.src !== '' ) {
-        if (options.forceLoad) {
-          src = $this.attr('src');
-          $this.attr('src', '');
-          bindToLoad(this, handleObj.handler);
-          $this.attr('src', src);
-        } else if ( this.complete || this.readyState === 4 ) {
-          handleObj.handler.apply(this, arguments);
-        } else {
-          bindToLoad(this, handleObj.handler);
-        }
-      }
-    },
-
-    teardown: function (namespaces) {
-      $(this).unbind('.imageready');
-    }
-  };
-
-  function bindToLoad(element, callback) {
-    var $this = $(element);
-
-    $this.bind('load.imageready', function () {
-       callback.apply(element, arguments);
-       $this.unbind('load.imageready');
-     });
-  }
-
-}(jQuery));
+}(jQuery, this, this.document));
