@@ -81,7 +81,7 @@ $('#loading').fadeOut(2000);
         $('#nav-contact').addClass('clicked');
       };
     } else {
-      $('#about').animate({"margin-top":'-100%' }, 1000);
+      $('#about').animate({"margin-top":'-150%' }, 1000);
       $('#nav-about').removeClass('clicked');
       aboutClicked = false;
       if (contactClicked === true) {
@@ -100,7 +100,7 @@ $('#loading').fadeOut(2000);
 
   });
   $('#about-close').on('click', function(){
-    $('#about').animate({"margin-top":'-100%'} , 1000);
+    $('#about').animate({"margin-top":'-150%'} , 1000);
     if (contactClicked === true) {
         $('#contact').slideToggle(1000);
         contactClicked = false;

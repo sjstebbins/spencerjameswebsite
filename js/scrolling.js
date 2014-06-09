@@ -7,7 +7,7 @@ var pastTechnologies2 = false;
 var pastPortfolio = false;
 var pastPortfolio2 = false;
 var pastPortfolio3 = false;
-
+var pastPortfolio4 = false;
 
 $(document).ready(function(){
 
@@ -19,14 +19,17 @@ $(document).ready(function(){
   $('#ga').css('margin-left', '-100%');
   $('#ga2').css('margin-right', '-100%');
   $('#relephant-title').hide();
-  $('#relephant').css('margin-left', '-100%');
-  $('#relephant2').css('margin-right', '-100%');
+  $('#relephant').css('margin-left', '-150%');
+  $('#relephant2').css('margin-right', '-150%');
   $('#vogueabode-title').hide();
-  $('#vogueabode').css('margin-left', '-100%');
-  $('#vogueabode2').css('margin-right', '-100%');
+  $('#vogueabode').css('margin-left', '-150%');
+  $('#vogueabode2').css('margin-right', '-150%');
+  $('#planned-title').hide();
+  $('#trunkmonkey').css('margin-left', '-150%');
+  $('#rinfret').css('margin-right', '-150%');
   $('#tucan-title').hide();
-  $('#tucan').css('margin-left', '-100%');
-  $('#tucan2').css('margin-right', '-100%');
+  $('#tucan').css('margin-left', '-150%');
+  $('#tucan2').css('margin-right', '-150%');
   // $('.meter').hide();
 
 
@@ -129,7 +132,6 @@ var ga = $("#technologies").offset().top + 300;
 
 //Portfolio
 var portfolio = $("#portfolio").offset().top -70;
-var portfolio2 = $("#portfolio").offset().top + 250;
 
     if (scroll > portfolio ) {
       if (!pastPortfolio) {
@@ -143,11 +145,13 @@ var portfolio2 = $("#portfolio").offset().top + 250;
       if (pastPortfolio) {
         $('#nav-portfolio').removeClass('clicked');
         $('#relephant-title').fadeOut();
-        $('#relephant').animate({'margin-left': '-100%'});
-        $('#relephant2').animate({'margin-right': '-100%'});
+        $('#relephant').animate({'margin-left': '-150%'});
+        $('#relephant2').animate({'margin-right': '-150%'});
         pastPortfolio = false;
       }
     }
+
+var portfolio2 = $("#portfolio").offset().top + 250;
 
   if (scroll > portfolio2 ) {
       if (!pastPortfolio2) {
@@ -159,8 +163,8 @@ var portfolio2 = $("#portfolio").offset().top + 250;
     } else {
       if (pastPortfolio2) {
         $('#vogueabode-title').fadeOut();
-        $('#vogueabode').animate({'margin-left': '-100%'});
-        $('#vogueabode2').animate({'margin-right': '-100%'});
+        $('#vogueabode').animate({'margin-left': '-150%'});
+        $('#vogueabode2').animate({'margin-right': '-150%'});
         pastPortfolio2 = false;
       }
     }
@@ -180,6 +184,24 @@ var portfolio2 = $("#portfolio").offset().top + 250;
   //       pastPortfolio3 = false;
   //     }
   //   }
+
+var portfolio4 = $("#portfolio").offset().top + 600;
+
+  if (scroll > portfolio4 ) {
+      if (!pastPortfolio4) {
+       $('#planned-title').fadeIn();
+       $('#trunkmonkey').animate({'margin-left': '0px'});
+       $('#rinfret').animate({'margin-right': '0px'});
+       pastPortfolio4 = true;
+     }
+    } else {
+      if (pastPortfolio4) {
+        $('#planned-title').fadeOut();
+        $('#trunkmonkey').animate({'margin-left': '-150%'});
+        $('#rinfret').animate({'margin-right': '-150%'});
+        pastPortfolio4 = false;
+      }
+    }
 
   });
 });

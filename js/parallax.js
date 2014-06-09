@@ -47,8 +47,8 @@ function backgroundMove(e) {
 
   // var currentXpos = $('body').find('#entire-logo').css('margin-left');
   // var currentYpos = $('body').find('#entire-logo').css('margin-top');
-  $('#entire-logo').css('margin-left', 89 + imgBgPosX + "%" );
-  $('#entire-logo').css('margin-top', 100 + imgBgPosY + "px" );
+  // $('#entire-logo').css('margin-left', 89 + imgBgPosX + "%" );
+  // $('#entire-logo').css('margin-top', 100 + imgBgPosY + "px" );
   // document.body.style.backgroundPosition = imgBgPosX + "px " + imgBgPosY + "px";
 }
 
