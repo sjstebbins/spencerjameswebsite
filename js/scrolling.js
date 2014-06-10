@@ -37,6 +37,19 @@ $(document).ready(function(){
 
     var scroll = $(document).scrollTop();
 
+// About
+
+ if (scroll < 60) {
+      $('#about').animate({"margin-top":'-150%' }, 1000);
+      $('#nav-about').removeClass('clicked');
+      aboutClicked = false;
+      if (contactClicked === true) {
+        $('#contact').slideToggle(1000);
+        contactClicked = false;
+        $('#nav-contact').removeClass('clicked');
+      };
+    }
+
 
 // NAV
     if (scroll > 50) {

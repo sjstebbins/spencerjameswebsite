@@ -89,6 +89,7 @@ a:hover{
   margin-top: -200%;
   height: 80%;
   z-index: 500;
+  width: 100%
 }
 #personal-gif{
 -webkit-filter: grayscale(0%);
@@ -136,27 +137,33 @@ transition: all 0.9s ease-in-out;
 
 #entire-logo{
   margin-top: 55px;
-  width: 100%;
+  margin-left: 10%;
+  width: 400px;
+  padding: none;
+  z-index: 1;
+  position: fixed
 }
 .logo-piece{
   width: 15%;
   z-index: 1;
   position: fixed;
-  display: inline
+  margin-left: 32%;
 }
 #box-logo{
-  margin-left: 40%
+
 }
 .spencerjames{
-  margin-top: 63px;
+  margin-top: 4%;
+  position: fixed;
   z-index: 1;
-  position: fixed
 }
 #spencer{
  margin-left: 5%;
+ width: 28%
 }
 #james{
-margin-left: 45%;
+margin-left: 46%;
+width: 20%
 }
 
 /*Clouds*/
@@ -182,6 +189,7 @@ margin-left: 45%;
   width: 100%;
   margin-top: 400px;
   bottom: 0px;
+  z-index: 101
 }
 
 

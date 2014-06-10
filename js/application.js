@@ -59,10 +59,10 @@ $('#loading').fadeOut(2000);
   $('#j').css("margin-left",'80%');
 
   $('#box').slideDown(1000, function(){
-    $('#c').animate({"margin-left":'0%',"margin-top":'0%' } , 2000);
-    $('#o').animate({"margin-left":'0%' } , 2000);
-    $('#s').animate({"margin-top":'0%', "margin-left":'0%'  } , 2000);
-    $('#j').animate({"margin-top":'0%', "margin-left":'0%'  } , 2000, function(){
+    $('#c').animate({"margin-left":'32%',"margin-top":'0%' } , 2000);
+    $('#o').animate({"margin-left":'32%' } , 2000);
+    $('#s').animate({"margin-top":'0%', "margin-left":'32%'  } , 2000);
+    $('#j').animate({"margin-top":'0%', "margin-left":'32%'  } , 2000, function(){
         $('.spencerjames').fadeIn(1000);
     });
   });
@@ -90,13 +90,12 @@ $('#loading').fadeOut(2000);
         $('#nav-contact').removeClass('clicked');
       };
     }
+     var top = body.scrollTop();
     if (top < 70) {
         body.animate({
           scrollTop: 70,
         }, '500');
     }
-
-
 
   });
   $('#about-close').on('click', function(){
