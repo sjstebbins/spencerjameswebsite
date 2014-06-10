@@ -99,6 +99,20 @@ $('#loading').fadeOut(2000);
   });
 
 
+// About scroll
+
+   var scroll = $(document).scrollTop();
+ if (scroll < 60 && $('#nav-about').hasClass('clicked')) {
+      $('#about').animate({"margin-top":'-150%' }, 1000);
+      $('#nav-about').removeClass('clicked');
+      aboutClicked = false;
+      if (contactClicked === true) {
+        $('#contact').slideToggle(1000);
+        contactClicked = false;
+        $('#nav-contact').removeClass('clicked');
+      }
+    }
+
   $('#about-close').on('click', function(){
     $('#about').animate({"margin-top":'-150%'} , 1000);
     if (contactClicked === true) {
