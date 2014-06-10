@@ -96,8 +96,9 @@ $('#loading').fadeOut(2000);
           scrollTop: 70,
         }, '500');
     }
-
   });
+
+
   $('#about-close').on('click', function(){
     $('#about').animate({"margin-top":'-150%'} , 1000);
     if (contactClicked === true) {
