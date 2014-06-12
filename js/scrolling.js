@@ -32,11 +32,30 @@ $(document).ready(function(){
   $('#tucan2').css('margin-right', '-150%');
   // $('.meter').hide();
 
+// Mobile
+    var width = $(document).width();
+    var scroll = $(document).scrollTop();
+    if ( width < 480) {
+                $('nav').css('background', 'rgba(255,255,255,.9)');
+                $('#nav li').css('margin', '5px');
+                $('.reveal-modal').css('top', '160px');
+                $('.reveal-modal').css('height', '10vw');
+                $('#contact').css('height', '80px');
+                $('#contact-list li').css('margin', '5px');
+                if (scroll > 70) {
+                  $('#nav-about').on('click', function(){
+                    $('#about').css('top', '60px');
+                    $('#about').css('margin-bottom', '100px');
+                    $('#nav-contact').removeClass('clicked');
+                    $('#contact').css('margin-bottom', '-50%');
+                  });
+                }
+              }
 
   $(window).scroll(function(){
 
     var scroll = $(document).scrollTop();
-
+    var width = $(document).width();
 
 
 // NAV
@@ -47,6 +66,10 @@ $(document).ready(function(){
             $('#nav li').css('margin', '15px', 500);
             $('#nav ul').css('margin-top', '10px', 500);
             $('#nav').css('height', '70px');
+            // mobile
+              if ( width < 480) {
+                $('#nav').css('height', '130px');
+              }
             $('#logo').show();
             navWide = true;
           }
@@ -55,6 +78,11 @@ $(document).ready(function(){
             $('#nav').css('background', 'rgba(255,255,255,0)', 1000);
             $('#nav li').css('margin', '10px');
             $('#nav').css('height', '50px');
+            // mobile
+              if ( width < 480) {
+                $('nav').css('background', 'rgba(255,255,255,.9)');
+                $('#nav li').css('margin', '5px');
+              }
             $('#entire-logo').fadeIn(1000);
             $('#logo').hide();
             navWide = false;

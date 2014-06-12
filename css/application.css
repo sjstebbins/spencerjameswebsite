@@ -205,7 +205,6 @@ transition: all 0.9s ease-in-out;
 background: url('../img/zwartevilt.png');
 color: white;
 margin-top: -80px;
-height: 1100px
 }
 #skills:hover{
 -webkit-filter: grayscale(0%);
@@ -344,3 +343,4 @@ footer{
   z-index: 100
 
 }
+
