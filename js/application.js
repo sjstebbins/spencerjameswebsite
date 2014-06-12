@@ -33,18 +33,33 @@ $('#loading').fadeOut(2000);
           scrollTop: 0,
         }, '500');
     });
-
-    $("#nav-skills").on('click', function(){
-        body.animate({
-          scrollTop: 540,
-        }, '500');
-    });
-
-     $("#nav-portfolio").on('click', function(){
-        body.animate({
-          scrollTop: 1640,
-        }, '500');
-    });
+    var width = $(document).width();
+    if ( width > 480 ) {
+      $("#nav-skills").on('click', function(){
+          body.animate({
+            scrollTop: 540,
+          }, '500');
+      });
+    } else {
+       $("#nav-skills").on('click', function(){
+          body.animate({
+            scrollTop: 400,
+          }, '500');
+      });
+    }
+    if ( width > 480 ) {
+       $("#nav-portfolio").on('click', function(){
+          body.animate({
+            scrollTop: 1640,
+          }, '500');
+      });
+    } else {
+       $("#nav-skills").on('click', function(){
+          body.animate({
+            scrollTop: 400,
+          }, '500');
+      });
+    }
 
 // Logo Animation
 
@@ -61,7 +76,7 @@ $('#loading').fadeOut(2000);
 
   $('#box').slideDown(1000, function(){
     $('#c').animate({"margin-left":'32%',"margin-top":'0%' } , 2000);
-    $('#o').animate({"margin-left":'32%' } , 2000);
+    $('#o').animate({"margin-left":'32%',"margin-top":'0%'} , 2000);
     $('#s').animate({"margin-top":'0%', "margin-left":'32%'  } , 2000);
     $('#j').animate({"margin-top":'0%', "margin-left":'32%'  } , 2000, function(){
         $('.spencerjames').fadeIn(1000);

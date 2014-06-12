@@ -40,8 +40,11 @@ $(document).ready(function(){
                 $('#nav li').css('margin', '5px');
                 $('.reveal-modal').css('top', '160px');
                 $('.reveal-modal').css('height', '10vw');
-                $('#contact').css('height', '80px');
+                $('#contact').css('height', '10%');
                 $('#contact-list li').css('margin', '5px');
+                // $('#logo').css('height', '30px');
+                // $('#intro').css('height', '400px');
+                // $('#matterhorn').css('top', '400px');
                 if (scroll > 70) {
                   $('#nav-about').on('click', function(){
                     $('#about').css('top', '60px');
