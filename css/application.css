@@ -145,12 +145,12 @@ transition: all 0.9s ease-in-out;
 }
 .logo-piece{
   width: 15%;
-  z-index: 1;
+  z-index: 10;
   position: fixed;
   margin-left: 32%;
 }
-#box-logo{
-
+#box{
+  z-index: 1
 }
 .spencerjames{
   margin-top: 4%;
